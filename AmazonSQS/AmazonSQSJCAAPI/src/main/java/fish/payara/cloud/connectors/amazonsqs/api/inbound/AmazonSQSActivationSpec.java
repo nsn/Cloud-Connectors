@@ -41,6 +41,7 @@ package fish.payara.cloud.connectors.amazonsqs.api.inbound;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.util.StringUtils;
 import fish.payara.cloud.connectors.amazonsqs.api.AmazonSQSListener;
@@ -199,6 +200,9 @@ public class AmazonSQSActivationSpec implements ActivationSpec, AWSCredentialsPr
     public AWSCredentials getCredentials() {
         // Return Credentials based on what is present, profileName taking priority.
         if (StringUtils.isNullOrEmpty(getProfileName())) {
+            if (StringUtils.isNullOrEmpty(getAwsAccessKeyId())) {
+                return new DefaultAWSCredentialsProviderChain().getCredentials();
+            }
             return new AWSCredentials() {
                 @Override
                 public String getAWSAccessKeyId() {
